@@ -1,0 +1,38 @@
+name: Build Krypzo Client
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Dar permisos a Gradle
+        run: chmod +x gradlew || true
+
+      - name: Compilar mod
+        run: |
+          if [ -f ./gradlew ]; then
+            ./gradlew build
+          else
+            gradle build
+          fi
+
+      - name: Guardar archivo JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: KrypzoClient
+          path: build/libs/*.jar
